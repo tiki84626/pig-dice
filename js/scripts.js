@@ -20,7 +20,17 @@ var p1 = new Player("t1k1", 1, 0, 0);
 var p2 = new Player("trivassi", 2, 0, 0);
 var count = 0;
 
-
+function easyCompTurn() {
+  if (p2.turnScore < 15) {
+    roll();
+    easyCompTurn();
+  } else if (dice.dice1 === dice.dice2) {
+    roll();
+    easyCompTurn();
+  } else {
+    endTurn();
+  }
+}
 
 function diceRoll() {
   dice.dice1 = 1 + Math.floor(Math.random() * 6);
@@ -47,66 +57,84 @@ function diceRoll() {
   }
 }
 
+function endTurn() {
+  if ((count%2) === 0) {
+    p1.totalScore += p1.turnScore;
+    $("#p1-total-score").text(p1.totalScore);
+    $("#arrow1").hide();
+    $("#arrow2").show();
+  } else if ((count%2) === 1) {
+    p2.totalScore += p2.turnScore;
+    $("#p2-total-score").text(p2.totalScore);
+    $("#arrow2").hide();
+    $("#arrow1").show();
+  }
 
+  if (p1.totalScore >= 100) {
+    $(".playing").hide();
+    $(".won").show();
+    $("#username-won").text($("input#p1-username").val() + " Wins");
+    $("#user-points-won").text(p1.totalScore);
+  } else if (p2.totalScore >= 100) {
+    $(".playing").hide();
+    $(".won").show();
+    $("#username-won").text($("input#p2-username").val() + " Wins");
+    $("#user-points-won").text(p2.totalScore);
+  }
+
+  count += 1;
+  p1.turnScore = 0;
+  p2.turnScore = 0;
+  $("#turn-score").text(0);
+}
+
+function roll() {
+  $("#turn-score").text(diceRoll());
+  $("#end").show();
+
+  if ((count%2) === 1 && (dice.dice1 === 1 && dice.dice2 === 1)) {
+    p1.totalScore = 0;
+    $("#p1-total-score").text(p1.totalScore);
+    $("#arrow1").hide();
+    $("#arrow2").show();
+  } else if ((count%2) === 0 && (dice.dice1 === 1 && dice.dice2 === 1)) {
+    p2.totalScore = 0;
+    $("#p2-total-score").text(p2.totalScore);
+    $("#arrow2").hide();
+    $("#arrow1").show();
+  } else if ((count%2) === 1 && (dice.dice1 === 1 || dice.dice2 === 1)) {
+    $("#arrow1").hide();
+    $("#arrow2").show();
+  } else if ((count%2) === 0 && (dice.dice1 === 1 || dice.dice2 === 1)) {
+    $("#arrow2").hide();
+    $("#arrow1").show();
+  } else if (dice.dice1 === dice.dice2) {
+    $("#end").hide();
+  }
+}
+
+
+//Front End
 $(document).ready(function() {
   $("#roll").click(function(event) {
     event.preventDefault();
 
-    $("#turn-score").text(diceRoll());
-    $("#end").show();
+    roll();
 
-    if ((count%2) === 1 && (dice.dice1 === 1 && dice.dice2 === 1)) {
-      p1.totalScore = 0;
-      $("#p1-total-score").text(p1.totalScore);
-      $("#arrow1").hide();
-      $("#arrow2").show();
-    } else if ((count%2) === 0 && (dice.dice1 === 1 && dice.dice2 === 1)) {
-      p2.totalScore = 0;
-      $("#p2-total-score").text(p2.totalScore);
-      $("#arrow2").hide();
-      $("#arrow1").show();
-    } else if ((count%2) === 1 && (dice.dice1 === 1 || dice.dice2 === 1)) {
-      $("#arrow1").hide();
-      $("#arrow2").show();
-    } else if ((count%2) === 0 && (dice.dice1 === 1 || dice.dice2 === 1)) {
-      $("#arrow2").hide();
-      $("#arrow1").show();
-    } else if (dice.dice1 === dice.dice2) {
-      $("#end").hide();
+    if ((count%2) === 1 && p2.username === "easyComp") {
+      easyCompTurn();
     }
+
   });
 
   $("#end").click(function(event) {
     event.preventDefault();
 
-    if ((count%2) === 0) {
-      p1.totalScore += p1.turnScore;
-      $("#p1-total-score").text(p1.totalScore);
-      $("#arrow1").hide();
-      $("#arrow2").show();
-    } else if ((count%2) === 1) {
-      p2.totalScore += p2.turnScore;
-      $("#p2-total-score").text(p2.totalScore);
-      $("#arrow2").hide();
-      $("#arrow1").show();
-    }
+    endTurn();
 
-    if (p1.totalScore >= 100) {
-      $(".playing").hide();
-      $(".won").show();
-      $("#username-won").text($("input#p1-username").val() + " Wins");
-      $("#user-points-won").text(p1.totalScore);
-    } else if (p2.totalScore >= 100) {
-      $(".playing").hide();
-      $(".won").show();
-      $("#username-won").text($("input#p2-username").val() + " Wins");
-      $("#user-points-won").text(p2.totalScore);
+    if (p2.username === "easyComp") {
+      easyCompTurn();
     }
-
-    count += 1;
-    p1.turnScore = 0;
-    p2.turnScore = 0;
-    $("#turn-score").text(0);
   });
 
   $("#play").click(function(event) {
@@ -119,11 +147,26 @@ $(document).ready(function() {
     $(".playing").show();
   });
 
-  $("#play-vs-comp").click(function(event) {
+  $("#easy-comp").click(function(event) {
+    event.preventDefault();
+
+    var nameArray = ["Joe", "Bob", "Brad", "Tod"];
+    var randomName = nameArray[Math.floor(Math.random() * nameArray.length)];
+    p2.username = "easyComp";
+
+    $("#username1").text($("input#p1-username").val());
+    $("#username2").text(randomName);
+    $(".input-username").hide();
+    $("#arrow1").show();
+    $(".playing").show();
+  });
+
+  $("#hard-comp").click(function(event) {
     event.preventDefault();
 
     var nameArray = ["Hal", "TARS", "GERTY", "Zardon"];
     var randomName = nameArray[Math.floor(Math.random() * nameArray.length)];
+    p2.username = "hardComp";
 
     $("#username1").text($("input#p1-username").val());
     $("#username2").text(randomName);
