@@ -1,14 +1,20 @@
 html, body {
   height: 100%;
-  background-image: url(../img/background.jpg);
-  background-size: cover;
   width: 100;
+  background-image: url(../img/background1.png);
   font-family: 'Permanent Marker', cursive;
 }
 
 #turn-score {
   text-align: center;
   border: 2px solid black;
+  min-width: 80px;
+}
+
+#arrow1, #arrow2 {
+  width: 40px;
+  height: 40px;
+  display: none;
 }
 
 .rules {
@@ -17,7 +23,7 @@ html, body {
   font-size: 18px;
 }
 
-.col-md-6 {
+.col-xs-6 {
   text-align: center;
 
 }
@@ -40,7 +46,7 @@ html, body {
 
 #buttons {
   text-align: center;
-  padding-top: 500px;
+  padding-top: 200px;
 }
 
 #rule {
@@ -64,7 +70,7 @@ html, body {
 
 .playing {
   display: none;
-  /*background-color: #E0AFA0;*/
+  background-image: url(../img/background1.png);
   height: 100%;
 }
 
@@ -76,7 +82,7 @@ html, body {
 
 .won {
   display: none;
-  background-color:
+  background-image: url(../img/background1.png);
 }
 
 input[type=text] {
